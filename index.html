@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DataCoorp - Login</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DataCoorp - Login (Simulasi)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
     <style>
       body {
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
@@ -130,9 +126,8 @@
       </div>
     </div>
 
-    <!-- Firebase SDK (modular v9+) -->
+    <!-- FIREBASE SDK -->
     <script type="module">
-      // 1) GANTI konfigurasi di bawah dengan config Firebase Web App Anda
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
       import {
         getFirestore,
@@ -141,6 +136,7 @@
         serverTimestamp,
       } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
+      // 🔧 GANTI DENGAN PUNYAMU
       const firebaseConfig = {
         apiKey: "AIzaSyCrefcI8uejrg5_7x4Dds3THe-UZJ1qD3g",
         authDomain: "pki-socialengineering.firebaseapp.com",
@@ -154,38 +150,52 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
-
-          const email = document.getElementById("loginEmail").value.trim();
-          // PENTING: jangan baca atau kirim password ke server/firestore!
-          // const password = document.getElementById('loginPassword').value.trim(); // DO NOT SEND
-
-          // Ambil domain saja (lebih privat) — opsional, Anda bisa hapus baris ini
-          const email_domain =
-            email && email.includes("@") ? email.split("@").pop() : null;
-
-          const payload = {
-            event: "login_click",
+      // 🧠 Fungsi bantu untuk kirim log ke Firestore
+      async function logEvent(eventType, extraData = {}) {
+        try {
+          await addDoc(collection(db, "events"), {
+            event: eventType,
             page: "login",
-            email_is_test: !!email && email.endsWith("@test.local"),
-            email_domain: email_domain,
             referrer: document.referrer || null,
             user_agent: navigator.userAgent,
             created_at: serverTimestamp(),
-          };
+            ...extraData,
+          });
+        } catch (err) {
+          console.warn("Gagal mencatat event:", err);
+        }
+      }
 
-          try {
-            // Simpan ke koleksi 'events' — Firestore rules akan validasi
-            await addDoc(collection(db, "events"), payload);
-          } catch (err) {
-            // tidak crash UX; hanya log ke console
-            console.error("Gagal simpan event ke Firestore", err);
-          }
+      // 1️⃣ Catat ketika user membuka halaman
+      logEvent("page_visit");
 
-          // Tampilkan peringatan simulasi
+      // 2️⃣ Catat ketika user mulai mengetik di input email/password
+      let inputLogged = false;
+      document.getElementById("loginForm").addEventListener("input", (e) => {
+        if (!inputLogged) {
+          const emailVal = document.getElementById("loginEmail").value.trim();
+          const domain = emailVal.includes("@")
+            ? emailVal.split("@").pop()
+            : null;
+          logEvent("form_input", { email_domain: domain });
+          inputLogged = true; // biar gak spam tiap ketik
+        }
+      });
+
+      // 3️⃣ Catat ketika user klik tombol Sign In
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const emailVal = document.getElementById("loginEmail").value.trim();
+          const domain = emailVal.includes("@")
+            ? emailVal.split("@").pop()
+            : null;
+
+          await logEvent("login_click", { email_domain: domain });
+
+          // Ganti tampilan
           document.getElementById("loginPage").classList.add("hidden");
           document.getElementById("warningPage").classList.remove("hidden");
           window.scrollTo({ top: 0, behavior: "smooth" });
