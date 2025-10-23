@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DataCoorp - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex items-center justify-center p-4">
+    <!-- LOGIN PAGE -->
+    <div
+      id="loginPage"
+      class="w-full max-w-md bg-white rounded-xl shadow-lg p-8"
+    >
+      <div class="text-center mb-6">
+        <div class="text-blue-600 font-bold text-2xl mb-1">
+          DATA<span class="text-gray-800">COORP</span>
+        </div>
+        <p class="text-gray-600 text-sm">
+          Sign in to access your job application portal
+        </p>
+      </div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Email Address</label
+          >
+          <input
+            type="email"
+            id="loginEmail"
+            required
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+            placeholder="you@company.com"
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="loginPassword"
+            required
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+            placeholder="••••••••"
+            autocomplete="off"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow-md transition"
+        >
+          Sign In
+        </button>
+      </form>
+
+      <div class="mt-6 text-center text-xs text-gray-500">
+        <p>© 2025 DataCoorp. All rights reserved.</p>
+      </div>
+    </div>
+
+    <!-- PHISHING WARNING PAGE -->
+    <div
+      id="warningPage"
+      class="hidden w-full max-w-2xl bg-white rounded-xl shadow-lg p-8 text-center"
+    >
+      <div class="text-red-600 mb-4">
+        <i class="fas fa-exclamation-triangle text-5xl"></i>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-800 mb-4">
+        ⚠️ Anda Hampir Tertipu!
+      </h1>
+      <div
+        class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left"
+      >
+        <p class="text-red-800 font-medium mb-2">
+          Ini adalah simulasi <strong>serangan phishing</strong>.
+        </p>
+        <p class="text-gray-700">
+          Anda baru saja memasukkan kredensial ke situs palsu yang menyerupai
+          perusahaan asli. <strong>Tidak ada data yang disimpan</strong>, tetapi
+          dalam serangan nyata, informasi Anda bisa dicuri!
+        </p>
+      </div>
+      <div
+        class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left"
+      >
+        <h2 class="font-bold text-blue-800 mb-2">Apa Itu Phishing?</h2>
+        <p class="text-gray-700 text-sm">
+          Phishing adalah upaya penipuan untuk mencuri data pribadi dengan
+          menyamar sebagai entitas tepercaya melalui email, SMS, atau situs web
+          palsu.
+        </p>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-left">
+        <h2 class="font-bold text-green-800 mb-2">Tips Melindungi Diri:</h2>
+        <ul class="text-gray-700 text-sm list-disc pl-5 space-y-1">
+          <li>Jangan klik link dari SMS/email mencurigakan</li>
+          <li>Periksa URL situs web sebelum login</li>
+          <li>Gunakan autentikasi dua faktor (2FA)</li>
+          <li>Jika ragu, hubungi perusahaan melalui saluran resmi</li>
+        </ul>
+      </div>
+
+      <div class="mt-6 text-xs text-gray-500">
+        <p>
+          ✅ Simulasi ini dibuat untuk
+          <strong>edukasi kesadaran keamanan siber</strong>.
+        </p>
+        <p>🔒 Tidak ada data Anda yang dikumpulkan atau disimpan.</p>
+        <p class="mt-2 text-red-600 font-medium">
+          Jika Anda memasukkan password asli, segera ganti password tersebut!
+        </p>
+      </div>
+    </div>
+
+    <!-- Firebase SDK (modular v9+) -->
+    <script type="module">
+      // 1) GANTI konfigurasi di bawah dengan config Firebase Web App Anda
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.25.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/9.25.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrefcI8uejrg5_7x4Dds3THe-UZJ1qD3g",
+        authDomain: "pki-socialengineering.firebaseapp.com",
+        projectId: "pki-socialengineering",
+        storageBucket: "pki-socialengineering.firebasestorage.app",
+        messagingSenderId: "76647251975",
+        appId: "1:76647251975:web:54bd0e0aa23ab2dacaaaa2",
+        measurementId: "G-C83ELZ7VP4",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("loginEmail").value.trim();
+          // PENTING: jangan baca atau kirim password ke server/firestore!
+          // const password = document.getElementById('loginPassword').value.trim(); // DO NOT SEND
+
+          // Ambil domain saja (lebih privat) — opsional, Anda bisa hapus baris ini
+          const email_domain =
+            email && email.includes("@") ? email.split("@").pop() : null;
+
+          const payload = {
+            event: "login_click",
+            page: "login",
+            email_is_test: !!email && email.endsWith("@test.local"),
+            email_domain: email_domain,
+            referrer: document.referrer || null,
+            user_agent: navigator.userAgent,
+            created_at: serverTimestamp(),
+          };
+
+          try {
+            // Simpan ke koleksi 'events' — Firestore rules akan validasi
+            await addDoc(collection(db, "events"), payload);
+          } catch (err) {
+            // tidak crash UX; hanya log ke console
+            console.error("Gagal simpan event ke Firestore", err);
+          }
+
+          // Tampilkan peringatan simulasi
+          document.getElementById("loginPage").classList.add("hidden");
+          document.getElementById("warningPage").classList.remove("hidden");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    </script>
+  </body>
+</html>
